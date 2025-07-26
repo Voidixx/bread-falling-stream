@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream Interaction</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <!-- Full-screen video background -->
+    <div class="video-background" id="videoBackground">
+        <video id="breadVideo" 
+               src="./bread.mp4" 
+               preload="metadata"
+               playsinline
+               controls="false"
+               disablepictureinpicture
+               controlslist="nodownload nofullscreen noremoteplayback"
+               style="width: 100%; height: 100%; object-fit: cover; display: block;"
+               webkit-playsinline="true"
+               x5-playsinline="true"
+               muted="false"
+               crossorigin="anonymous">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Center header message -->
+    <div class="center-header">
+        <h1 class="subscribe-message">🍞 SUBSCRIBE FOR BREAD FALL! 🍞</h1>
+        <div class="bread-animation">🥖✨🥐✨🍞</div>
+    </div>
+
+    <!-- Minimal overlay for subscriber stats -->
+    <div class="stats-overlay" id="statsOverlay">
+        <div class="stat-item">
+            <span class="stat-value" id="subCount">Loading...</span>
+            <span class="stat-label">Subscribers</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="goal-text">Subscriber Goal: <span id="subGoal">1000</span></span>
+        </div>
+    </div>
+
+    <!-- Hidden interaction display for effects -->
+    <div class="interaction-display" id="interactionDisplay" style="display: none;">
+        <h2>Waiting for interactions...</h2>
+    </div>
+
+    
+
+    <!-- YouTube Background Music Playlist -->
+    <div id="youtubePlayer" style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; z-index: -1000;"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Load the IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Create a player variable for later use.
+        var player;
+        function onYouTubeIframeAPIReady() {
+            // Extract playlist ID from URL: PLRBp0Fe2Gpgm_u2w2a2isHw29SugZ34cD
+            player = new YT.Player('youtubePlayer', {
+                height: '1',
+                width: '1',
+                playerVars: {
+                    'listType': 'playlist',
+                    'list': 'PLRBp0Fe2Gpgm_u2w2a2isHw29SugZ34cD',
+                    'autoplay': 1,
+                    'loop': 1,
+                    'controls': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1,
+                    'playsinline': 1,
+                    'origin': window.location.origin,
+                    'mute': 0,
+                    'shuffle': 1 // Shuffle the playlist
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            try {
+                // Set volume to 15% (lower than bread video)
+                player.setVolume(15);
+                
+                // Try to auto-start playing with user interaction fallback
+                player.playVideo();
+                console.log('Background playlist started playing');
+            } catch (error) {
+                console.log('Autoplay blocked, waiting for user interaction:', error);
+                // Show click prompt for music
+                showMusicPrompt();
+            }
+        }
+
+        function showMusicPrompt() {
+            const prompt = document.createElement('div');
+            prompt.innerHTML = `
+                <div style="position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 10px; z-index: 1000; cursor: pointer;" onclick="enableMusic(this)">
+                    🎵 Click to enable background music
+                </div>
+            `;
+            document.body.appendChild(prompt);
+        }
+
+        function enableMusic(element) {
+            if (player && player.playVideo) {
+                player.playVideo();
+                element.parentElement.remove();
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            const state = event.data;
+            
+            if (state === YT.PlayerState.ENDED) {
+                // YouTube should automatically go to next video in playlist
+                // But if it doesn't, manually play next
+                setTimeout(() => {
+                    if (player.getPlayerState() === YT.PlayerState.ENDED) {
+                        player.nextVideo();
+                    }
+                }, 1000);
+            }
+            
+            // Log state changes for debugging
+            const states = {
+                [-1]: 'unstarted',
+                [0]: 'ended',
+                [1]: 'playing',
+                [2]: 'paused',
+                [3]: 'buffering',
+                [5]: 'video cued'
+            };
+            console.log('YouTube player state:', states[state] || state);
+        }
+
+        function onPlayerError(event) {
+            console.error("YouTube Player Error:", event.data);
+            // Try to skip to next video on error
+            if (player && player.nextVideo) {
+                player.nextVideo();
+            }
+        }
+
+    </script>
+</body>
+</html>
