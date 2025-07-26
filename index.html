@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream Interaction</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <!-- Full-screen video background -->
+    <div class="video-background" id="videoBackground">
+        <video id="breadVideo" 
+               src="./bread.mp4" 
+               preload="auto"
+               playsinline
+               controls="false"
+               disablepictureinpicture
+               controlslist="nodownload nofullscreen noremoteplayback"
+               style="width: 100%; height: 100%; object-fit: cover; display: block;"
+               webkit-playsinline="true"
+               x5-playsinline="true"
+               crossorigin="anonymous">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Center header message -->
+    <div class="center-header">
+        <h1 class="subscribe-message">🍞 SUBSCRIBE FOR BREAD FALL! 🍞</h1>
+        <div class="bread-animation">🥖✨🥐✨🍞</div>
+    </div>
+
+    <!-- Minimal overlay for subscriber stats -->
+    <div class="stats-overlay" id="statsOverlay">
+        <div class="stat-item">
+            <span class="stat-value" id="subCount">Loading...</span>
+            <span class="stat-label">Subscribers</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="goal-text">Subscriber Goal: <span id="subGoal">1000</span></span>
+        </div>
+    </div>
+
+    <!-- Hidden interaction display for effects -->
+    <div class="interaction-display" id="interactionDisplay" style="display: none;">
+        <h2>Waiting for interactions...</h2>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
